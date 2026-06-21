@@ -1,4 +1,4 @@
-import type { Activity, CreditSection, FriendName, LineItem } from './types'
+import type { Activity, CreditSection, FriendName, LineItem, SummaryTerm } from './types'
 import { FRIENDS } from './types'
 
 export function blankActivity(): Activity {
@@ -107,4 +107,67 @@ export function calcSummaryData(activities: Activity[]): CreditSection[] {
   }
 
   return creditSections
+}
+
+// ---- Text export ----
+
+export function summaryTermStr(terms: SummaryTerm[]): string {
+  return terms.reduce((str, t, i) => {
+    const part = `${fmt(t.amount)}(${t.activityName.toLowerCase()})`
+    if (i === 0) return part
+    return str + (t.isNegative ? ' - ' : ' + ') + part
+  }, '')
+}
+
+export function formatTextDump(activities: Activity[], creditSections: CreditSection[]): string {
+  const blocks: string[] = []
+
+  for (const activity of activities) {
+    const total = activityTotal(activity)
+    const shares = calcShares(activity)
+    const e = activity.emoji
+    const header = e
+      ? `**${e} ${activity.name} Total: $${fmt(total)} ${e}**`
+      : `**${activity.name} Total: $${fmt(total)}**`
+
+    const lines = [header, `*${activity.paidBy} Paid*`]
+
+    if (activity.mode === 'flat') {
+      const n = activity.participants.length
+      if (n > 1) {
+        lines.push(`${fmt(activity.flatCost)}/${n} = $${fmt(activity.flatCost / n)} per person`)
+      }
+      for (const p of activity.participants) {
+        lines.push(`> ${p}: **$${fmt(shares[p] ?? 0)}**`)
+      }
+    } else {
+      for (const f of FRIENDS.filter(f => (shares[f] ?? 0) > 0)) {
+        const terms = activity.lineItems
+          .filter(item => item.assignedTo.includes(f) && item.assignedTo.length > 0)
+          .map(item => fmt(item.cost / item.assignedTo.length))
+        const amount = `**$${fmt(shares[f]!)}**`
+        lines.push(
+          terms.length > 1
+            ? `> ${f}: ${terms.join('+')}=${amount}`
+            : `> ${f}: ${amount}`
+        )
+      }
+    }
+
+    blocks.push(lines.join('\n'))
+  }
+
+  if (creditSections.length === 0) {
+    blocks.push('✅ Everyone is settled up!')
+  } else {
+    for (const { creditor, rows } of creditSections) {
+      const lines = [`**💵 Total Pay Back ${creditor} 💵**`]
+      for (const { debtor, terms, net } of rows) {
+        lines.push(`> ✅ ${debtor}: ${summaryTermStr(terms)} = **$${fmt(net)}**`)
+      }
+      blocks.push(lines.join('\n'))
+    }
+  }
+
+  return blocks.join('\n\n')
 }

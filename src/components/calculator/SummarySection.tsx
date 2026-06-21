@@ -1,5 +1,5 @@
 import type { CreditSection } from './types'
-import { fmt } from './calc'
+import { fmt, summaryTermStr } from './calc'
 
 export default function SummarySection({
   creditSections,
@@ -17,11 +17,7 @@ export default function SummarySection({
           <div key={creditor} className="card pay-back-block">
             <div className="pay-back-title">💵 Total Pay Back {creditor} 💵</div>
             {rows.map(({ debtor, terms, net }) => {
-              const termStr = terms.reduce((str, t, i) => {
-                const part = `${fmt(t.amount)}(${t.activityName.toLowerCase()})`
-                if (i === 0) return part
-                return str + (t.isNegative ? ' - ' : ' + ') + part
-              }, '')
+              const termStr = summaryTermStr(terms)
               return (
                 <div key={debtor} className="debt-row">
                   <span className="debt-checkmark">✅</span>

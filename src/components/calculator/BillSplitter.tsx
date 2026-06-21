@@ -1,15 +1,25 @@
 import { useState, useMemo } from 'react'
 import './bill-splitter.css'
 import type { Activity } from './types'
-import { blankActivity, calcSummaryData } from './calc'
+import { blankActivity, calcSummaryData, formatTextDump } from './calc'
+import { encodeActivities, decodeActivities } from './share'
 import ActivityCard from './ActivityCard'
 import SummarySection from './SummarySection'
 import ActivityModal from './ActivityModal'
+import TextExportModal from './TextExportModal'
+
+function loadFromHash(): Activity[] | null {
+  const hash = window.location.hash
+  if (!hash.startsWith('#data=')) return null
+  return decodeActivities(hash.slice('#data='.length))
+}
 
 export default function BillSplitter() {
-  const [activities, setActivities] = useState<Activity[]>([])
+  const [activities, setActivities] = useState<Activity[]>(() => loadFromHash() ?? [])
   const [editing, setEditing] = useState<Activity | null>(null)
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const [copied, setCopied] = useState(false)
+  const [showExport, setShowExport] = useState(false)
 
   const creditSections = useMemo(() => calcSummaryData(activities), [activities])
 
@@ -47,6 +57,24 @@ export default function BillSplitter() {
     setExpandedIds(prev => { const next = new Set(prev); next.delete(id); return next })
   }
 
+  async function shareLink() {
+    if (activities.length === 0) return
+    const url =
+      window.location.origin +
+      window.location.pathname +
+      '#data=' +
+      encodeActivities(activities)
+    await navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1800)
+  }
+
+  function newBill() {
+    setActivities([])
+    setExpandedIds(new Set())
+    history.replaceState(null, '', window.location.pathname)
+  }
+
   function toggleExpand(id: string) {
     setExpandedIds(prev => {
       const next = new Set(prev)
@@ -73,7 +101,24 @@ export default function BillSplitter() {
       <div className="container">
         <div className="section-header">
           <span className="section-title">Activities</span>
-          <button className="add-btn" onClick={openAdd}>+ Add Activity</button>
+          <div className="section-actions">
+            <button className="secondary-btn" onClick={newBill}>New Bill</button>
+            <button
+              className="secondary-btn"
+              onClick={() => setShowExport(true)}
+              disabled={activities.length === 0}
+            >
+              Copy Text
+            </button>
+            <button
+              className={`secondary-btn${copied ? ' copied' : ''}`}
+              onClick={shareLink}
+              disabled={activities.length === 0}
+            >
+              {copied ? 'Copied!' : 'Share'}
+            </button>
+            <button className="add-btn" onClick={openAdd}>+ Add Activity</button>
+          </div>
         </div>
 
         {activities.length === 0 ? (
@@ -99,6 +144,13 @@ export default function BillSplitter() {
           initial={editing}
           onSave={saveActivity}
           onClose={closeModal}
+        />
+      )}
+
+      {showExport && (
+        <TextExportModal
+          text={formatTextDump(activities, creditSections)}
+          onClose={() => setShowExport(false)}
         />
       )}
     </div>

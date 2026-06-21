@@ -95,6 +95,29 @@
 
 .split-page .add-btn:hover { background: #145087; }
 
+.split-page .section-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.split-page .secondary-btn {
+  background: #fff;
+  color: #444441;
+  border: 1px solid #d3d1c7;
+  border-radius: 7px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.split-page .secondary-btn:hover { background: #f5f4f0; border-color: #185FA5; color: #185FA5; }
+.split-page .secondary-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.split-page .secondary-btn.copied { border-color: #0F6E56; color: #0F6E56; background: #f0faf6; }
+
 /* ---- Empty state ---- */
 .split-page .empty-state {
   text-align: center;
@@ -353,6 +376,25 @@
 }
 
 .split-page .modal-close:hover { background: #f5f4f0; color: #1a1a18; }
+
+/* ---- Text export ---- */
+.split-page .export-textarea {
+  width: 100%;
+  min-height: 14rem;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d3d1c7;
+  border-radius: 8px;
+  background: #f9f9f7;
+  color: #1a1a18;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+}
+
+.split-page .export-textarea:focus { border-color: #185FA5; background: #fff; }
 
 /* ---- Form rows ---- */
 .split-page .form-row {
