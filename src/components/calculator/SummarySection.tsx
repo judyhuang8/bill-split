@@ -3,12 +3,17 @@ import { fmt, summaryTermStr } from './calc'
 
 export default function SummarySection({
   creditSections,
+  onCopyText,
 }: {
   creditSections: CreditSection[]
+  onCopyText: () => void
 }) {
   return (
     <div className="summary-section">
-      <div className="section-title summary-title">Summary</div>
+      <div className="section-header summary-title">
+        <span className="section-title">Summary</span>
+        <button className="secondary-btn" onClick={onCopyText}>Copy Activity & Summary To Text</button>
+      </div>
 
       {creditSections.length === 0 ? (
         <div className="card settled-state">✅ Everyone is settled up!</div>

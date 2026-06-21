@@ -104,13 +104,6 @@ export default function BillSplitter() {
           <div className="section-actions">
             <button className="secondary-btn" onClick={newBill}>New Bill</button>
             <button
-              className="secondary-btn"
-              onClick={() => setShowExport(true)}
-              disabled={activities.length === 0}
-            >
-              Copy Text
-            </button>
-            <button
               className={`secondary-btn${copied ? ' copied' : ''}`}
               onClick={shareLink}
               disabled={activities.length === 0}
@@ -136,7 +129,12 @@ export default function BillSplitter() {
           ))
         )}
 
-        {activities.length > 0 && <SummarySection creditSections={creditSections} />}
+        {activities.length > 0 && (
+          <SummarySection
+            creditSections={creditSections}
+            onCopyText={() => setShowExport(true)}
+          />
+        )}
       </div>
 
       {editing && (
