@@ -25,7 +25,7 @@ export default function SummarySection({
               const termStr = summaryTermStr(terms)
               return (
                 <div key={debtor} className="debt-row">
-                  <span className="debt-checkmark">✅</span>
+                  <span className="debt-red-circle">⭕</span>
                   <span className="debt-debtor">{debtor}:</span>
                   <span className="debt-terms">{termStr}</span>
                   <span className="debt-eq">=</span>

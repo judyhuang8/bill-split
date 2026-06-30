@@ -308,7 +308,7 @@
 
 .split-page .debt-row:last-child { border-bottom: none; }
 
-.split-page .debt-checkmark { flex-shrink: 0; }
+.split-page .debt-red-circle { flex-shrink: 0; }
 .split-page .debt-debtor    { font-weight: 600; flex-shrink: 0; }
 .split-page .debt-terms     { color: #5f5e5a; flex: 1; min-width: 0; }
 .split-page .debt-eq        { color: #888780; flex-shrink: 0; }
