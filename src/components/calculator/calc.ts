@@ -158,12 +158,12 @@ export function formatTextDump(activities: Activity[], creditSections: CreditSec
   }
 
   if (creditSections.length === 0) {
-    blocks.push('✅ Everyone is settled up!')
+    blocks.push('🔴 Everyone is settled up!')
   } else {
     for (const { creditor, rows } of creditSections) {
       const lines = [`**💵 Total Pay Back ${creditor} 💵**`]
       for (const { debtor, terms, net } of rows) {
-        lines.push(`> ✅ ${debtor}: ${summaryTermStr(terms)} = **$${fmt(net)}**`)
+        lines.push(`> 🔴 ${debtor}: ${summaryTermStr(terms)} = **$${fmt(net)}**`)
       }
       blocks.push(lines.join('\n'))
     }
